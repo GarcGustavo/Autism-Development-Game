@@ -1,0 +1,6 @@
+Hello!
+I'm tablet thing friend guy!
+I'm an example for the speech system in this game.
+This is a demo showing how different characters can talk or narrate using different dialogue text files.
+A scene can have many characters with different dialogues, this system allows you to create scripts for specific scenes or characters and add music/narration or other context dependent actions to the scene.
+Bye!

@@ -1,0 +1,8 @@
+Hello
+This is an example text file
+Lines are broken up by spaces, if theres an empty line it shows as a blank line
+
+Like that
+Any text can be used in this
+That's all!
+Goodbye
