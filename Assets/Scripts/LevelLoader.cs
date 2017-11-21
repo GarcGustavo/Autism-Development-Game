@@ -5,20 +5,35 @@ using UnityEngine.SceneManagement;
 
 public class LevelLoader : MonoBehaviour {
 
-    public string levelToLoad;
+    public string startMenu;
+    public string level1;
+    public string level2;
+    public string level3;
+    public string level4;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-    public void OnMouseDown()
+    public void StartMenu()
     {
-        SceneManager.LoadScene(levelToLoad);
+        SceneManager.LoadScene(startMenu);
     }
+
+    public void Level1()
+    {
+        SceneManager.LoadScene(level1);
+    }
+
+    public void Level2()
+    {
+        SceneManager.LoadScene(level2);
+    }
+
+    public void Level3()
+    {
+        SceneManager.LoadScene(level3);
+    }
+
+    public void Level4()
+    {
+        SceneManager.LoadScene(level4);
+    }
+
 }
