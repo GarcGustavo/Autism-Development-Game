@@ -85,6 +85,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\ActivateTextOnClick.cs" />
+    <Compile Include="Assets\Scripts\EmojiGame\ButtonControl.cs" />
+    <Compile Include="Assets\Scripts\EmojiGame\ButtonPool.cs" />
+    <Compile Include="Assets\Scripts\EmojiGame\EmojiGameManager.cs" />
     <Compile Include="Assets\Scripts\LevelLoader.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\StartMenu.cs" />
