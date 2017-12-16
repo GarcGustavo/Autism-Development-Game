@@ -49,24 +49,25 @@ public class EmojiGameManager : MonoBehaviour
             gamePhase = 2;
         else if (playerScore >= 600)
             gamePhase = 3;
+        TurnUpdate();
     }
-
-    //currently spawns random buttons appropriate for each phase, does not guarantee a single correct answer, also spawns 1 less than max to make room for correct answer
-    //The while loops thing is dirty hack cause I'm sleep deprived if you're reading this and it's still there I'm sorry
-    //all that's left here is to spawn the correct button choice using the answerType var I made earlier and defined in createQuestions
+    
+    //The while loops thing is dirty hack cause I'm sleep deprived, I'm sure there's a better and more efficient way
+    //spawn the correct button choice using the answerType var I made earlier and defined in createQuestions
     private void TurnUpdate()
     {
         if (!activeTurn)
         {
+            createQuestion();
+            SpawnButton(answerType);
             if (gamePhase == 1)
             {
-                //SpawnButton();
                 for (int i = 0; i < maxButtons - 1; i++)
                 {
-                    string newButtonName = buttonImages[Random.Range(0, 4)].name;
-                    while (spawnedButtons.Contains(newButtonName))
+                    string newButtonName = buttonImages[Random.Range(5, 10)].name;
+                    while (spawnedButtons.Contains(newButtonName) || newButtonName == answerType)
                     {
-                        newButtonName = buttonImages[Random.Range(4, 9)].name;
+                        newButtonName = buttonImages[Random.Range(5, 10)].name;
                     }
                     SpawnButton(newButtonName);
                 }
@@ -75,10 +76,10 @@ public class EmojiGameManager : MonoBehaviour
             {
                 for (int i = 0; i < maxButtons - 1; i++)
                 {
-                    string newButtonName = buttonImages[Random.Range(5, 9)].name;
-                    while (spawnedButtons.Contains(newButtonName))
+                    string newButtonName = buttonImages[Random.Range(0, 5)].name;
+                    while (spawnedButtons.Contains(newButtonName) || newButtonName == answerType)
                     {
-                        newButtonName = buttonImages[Random.Range(5, 9)].name;
+                        newButtonName = buttonImages[Random.Range(0, 5)].name;
                     }
                     SpawnButton(newButtonName);
                 }
@@ -87,24 +88,63 @@ public class EmojiGameManager : MonoBehaviour
             {
                 for (int i = 0; i < maxButtons - 1; i++)
                 {
-                    string newButtonName = buttonImages[Random.Range(0, 9)].name;
-                    while (spawnedButtons.Contains(newButtonName))
+                    string newButtonName = buttonImages[Random.Range(0, 10)].name;
+                    while (spawnedButtons.Contains(newButtonName) || newButtonName == answerType)
                     {
-                        newButtonName = buttonImages[Random.Range(0, 9)].name;
+                        newButtonName = buttonImages[Random.Range(0, 10)].name;
                     }
                     SpawnButton(newButtonName);
                 }
             }
             else
                 Debug.Log("No valid game phase detected!");
+            shuffleButtons(spawnedButtons);
             activeTurn = true;
+        }
+        if (choiceType == answerType)
+        {
+            playerScore += 100;
+            activeTurn = false;
+            deleteButton("all");
+            choiceType = "none";
+            deleteQuestion();
+            //activate a congratulatory animation here
         }
     }
 
     //Shuffles and places the answer buttons on the control panel randomly
-    private void shuffleButtons()
+    //need to reset position later, its done in deleteButtons() for now
+    //the double for loop is innefficient have to remake it later, I'll have to refactor the way the buttons are handled later probably
+    private void shuffleButtons(List<string> buttonsToShuffle)
     {
+        List<string> buttonsDeck = new List<string>();
+        //start by the amount of pixels you want to move the buttons, same amount is then added succesively
+        int moveBy = -150;
+        int offset = (-moveBy);
 
+        //adds the buttons to the deck in a random order
+        for (int i = 0; i < buttonsToShuffle.Count;i++)
+        {
+            string shuffleName = spawnedButtons[i];
+            if (!buttonsDeck.Contains(shuffleName))
+                buttonsDeck.Add(shuffleName);
+            else
+                i--;
+        }
+
+        for(int i = 0; i < buttonsDeck.Count; i++)
+        {
+            for (int j = 0; j < buttons.Count; j++)
+            {
+                if (buttonsDeck[i] == buttons[j].name)
+                {
+                    Vector3 newPos = controlPanel.position;
+                    newPos.x += moveBy;
+                    buttons[j].transform.SetPositionAndRotation(newPos, controlPanel.rotation);
+                    moveBy = moveBy + offset;
+                }
+            }
+        }
     }
 
     //creates a question randomly depending on phase and avoids repeating past questions
@@ -124,6 +164,7 @@ public class EmojiGameManager : MonoBehaviour
             }
             else
             {
+                //this should later be replaced with the text question variants, will also have to change how buttons and answertypes work for phase 3 choices
                 question.sprite = questionImages[Random.Range(0, questionImages.Length)];
             }
 
@@ -193,8 +234,8 @@ public class EmojiGameManager : MonoBehaviour
             //spawns the buttons at the center of the controls panel
             newButton.transform.SetPositionAndRotation(controlPanel.position, controlPanel.rotation);
             buttons.Add(newButton);
-            //should create invisible list of buttons when set to false
-            newButton.gameObject.SetActive(true);
+            //should create invisible list of buttons when set to false, set to true for testing purposes
+            newButton.gameObject.SetActive(false);
         }
     }
 
@@ -202,13 +243,13 @@ public class EmojiGameManager : MonoBehaviour
     {
         if (name == "all")
         {
-            for (int i = 0; i < buttons.Capacity; i++)
+            for (int i = 0; i < buttons.Count; i++)
             {
                 buttons[i].gameObject.SetActive(true);
                 spawnedButtons.Add(buttons[i].gameObject.name);
             }
         }
-        for (int i = 0; i < buttons.Capacity; i++)
+        for (int i = 0; i < buttons.Count; i++)
         {
             if (name == buttons[i].name)
             {
@@ -222,21 +263,31 @@ public class EmojiGameManager : MonoBehaviour
     {
         if (name == "all")
         {
-            for (int i = 0; i < buttons.Capacity; i++)
+            for (int i = 0; i < buttons.Count; i++)
             {
                 buttons[i].gameObject.SetActive(false);
                 spawnedButtons.Remove(buttons[i].gameObject.name);
+                //resets the transform of the button to the center of the panel
+                buttons[i].transform.SetPositionAndRotation(controlPanel.position, controlPanel.rotation);
             }
         }
-        for (int i = 0; i < buttons.Capacity; i++)
+        for (int i = 0; i < buttons.Count; i++)
         {
             if (name == buttons[i].name)
             {
                 buttons[i].gameObject.SetActive(false);
                 spawnedButtons.Remove(buttons[i].gameObject.name);
+                //resets the transform of the button to the center of the panel
+                buttons[i].transform.SetPositionAndRotation(controlPanel.position, controlPanel.rotation);
             }
-                
         }
+    }
+
+    private void deleteQuestion()
+    {
+        validQuestion = false;
+        questionType = "none";
+        answerType = "";
     }
 
     public void createTextBox()
