@@ -125,7 +125,7 @@ public class EmojiGameManager : MonoBehaviour
         //adds the buttons to the deck in a random order
         for (int i = 0; i < buttonsToShuffle.Count;i++)
         {
-            string shuffleName = spawnedButtons[i];
+            string shuffleName = spawnedButtons[Random.Range(0, buttonsToShuffle.Count)];
             if (!buttonsDeck.Contains(shuffleName))
                 buttonsDeck.Add(shuffleName);
             else
