@@ -95,6 +95,7 @@
     <Compile Include="Assets\Scripts\TextImporter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Text\Emoji Game Text\Emoji_Example_Text.txt" />
     <None Include="Assets\Text\Example Dialogue.txt" />
     <None Include="Assets\Text\NPC Dialogue Example.txt" />
   </ItemGroup>
