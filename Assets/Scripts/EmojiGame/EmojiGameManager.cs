@@ -9,6 +9,7 @@ public class EmojiGameManager : MonoBehaviour
     public int playerScore;
     public int gamePhase;
     public int maxButtons;
+    public float sec = 1f;
 
     public string choiceType;
     public string questionType;
@@ -16,17 +17,24 @@ public class EmojiGameManager : MonoBehaviour
 
     public bool validQuestion;
     public bool activeTurn;
+    //future boolean variable to stop game when game won
+  //  public bool gameActive;
 
     public Transform controlPanel;
     public Sprite[] buttonImages;
     public List<Button> buttons;
     public Button buttonPrefab;
     public List<string> spawnedButtons;
-
+    
     public GameObject questionBox;
+    public GameObject congratsPrefab;
+    public GameObject menuButton;
+    public GameObject levelButton;
+    public GameObject winText;
     public Sprite[] questionImages;
     public List<string> usedQuestions;
     public Image question;
+    //public Image congrats;
 
     // Use this for initialization
     void Start()
@@ -47,8 +55,15 @@ public class EmojiGameManager : MonoBehaviour
             gamePhase = 1;
         else if (playerScore < 600)
             gamePhase = 2;
-        else if (playerScore >= 600)
+        else if (playerScore >= 600 && playerScore < 900)
             gamePhase = 3;
+
+        else if (playerScore >= 900)
+        {
+            menuButton.SetActive(true);
+            levelButton.SetActive(true);
+            winText.SetActive(true);
+        }
         TurnUpdate();
     }
     
@@ -56,62 +71,73 @@ public class EmojiGameManager : MonoBehaviour
     //spawn the correct button choice using the answerType var I made earlier and defined in createQuestions
     private void TurnUpdate()
     {
-        if (!activeTurn)
-        {
-            createQuestion();
-            SpawnButton(answerType);
-            if (gamePhase == 1)
+  
+            if (!activeTurn)
             {
-                for (int i = 0; i < maxButtons - 1; i++)
+                createQuestion();
+                SpawnButton(answerType);
+                if (gamePhase == 1)
                 {
-                    string newButtonName = buttonImages[Random.Range(5, 10)].name;
-                    while (spawnedButtons.Contains(newButtonName) || newButtonName == answerType)
+                    for (int i = 0; i < maxButtons - 1; i++)
                     {
-                        newButtonName = buttonImages[Random.Range(5, 10)].name;
+                        string newButtonName = buttonImages[Random.Range(5, 10)].name;
+                        while (spawnedButtons.Contains(newButtonName) || newButtonName == answerType)
+                        {
+                            newButtonName = buttonImages[Random.Range(5, 10)].name;
+                        }
+                        SpawnButton(newButtonName);
                     }
-                    SpawnButton(newButtonName);
                 }
+                else if (gamePhase == 2)
+                {
+                    for (int i = 0; i < maxButtons - 1; i++)
+                    {
+                        string newButtonName = buttonImages[Random.Range(0, 5)].name;
+                        while (spawnedButtons.Contains(newButtonName) || newButtonName == answerType)
+                        {
+                            newButtonName = buttonImages[Random.Range(0, 5)].name;
+                        }
+                        SpawnButton(newButtonName);
+                    }
+                }
+                else if (gamePhase == 3)
+                {
+                    for (int i = 0; i < maxButtons - 1; i++)
+                    {
+                        string newButtonName = buttonImages[Random.Range(0, 10)].name;
+                        while (spawnedButtons.Contains(newButtonName) || newButtonName == answerType)
+                        {
+                            newButtonName = buttonImages[Random.Range(0, 10)].name;
+                        }
+                        SpawnButton(newButtonName);
+                    }
+                }
+                else
+                    Debug.Log("No valid game phase detected!");
+                shuffleButtons(spawnedButtons);
+                activeTurn = true;
             }
-            else if (gamePhase == 2)
+            if (choiceType == answerType)
             {
-                for (int i = 0; i < maxButtons - 1; i++)
-                {
-                    string newButtonName = buttonImages[Random.Range(0, 5)].name;
-                    while (spawnedButtons.Contains(newButtonName) || newButtonName == answerType)
-                    {
-                        newButtonName = buttonImages[Random.Range(0, 5)].name;
-                    }
-                    SpawnButton(newButtonName);
-                }
+                playerScore += 100;
+                activeTurn = false;
+                deleteButton("all");
+                choiceType = "none";
+                deleteQuestion();
+                timer();
             }
-            else if (gamePhase == 3)
-            {
-                for (int i = 0; i < maxButtons - 1; i++)
-                {
-                    string newButtonName = buttonImages[Random.Range(0, 10)].name;
-                    while (spawnedButtons.Contains(newButtonName) || newButtonName == answerType)
-                    {
-                        newButtonName = buttonImages[Random.Range(0, 10)].name;
-                    }
-                    SpawnButton(newButtonName);
-                }
-            }
-            else
-                Debug.Log("No valid game phase detected!");
-            shuffleButtons(spawnedButtons);
-            activeTurn = true;
-        }
-        if (choiceType == answerType)
-        {
-            playerScore += 100;
-            activeTurn = false;
-            deleteButton("all");
-            choiceType = "none";
-            deleteQuestion();
-            //activate a congratulatory animation here
-        }
+        
     }
-
+    void timer()
+    {
+     congratsPrefab.SetActive(true);
+      StartCoroutine(LateCall());
+    }
+    IEnumerator LateCall()
+    {
+        yield return new WaitForSeconds(sec);
+        congratsPrefab.SetActive(false);
+    }
     //Shuffles and places the answer buttons on the control panel randomly
     //need to reset position later, its done in deleteButtons() for now
     //the double for loop is innefficient have to remake it later, I'll have to refactor the way the buttons are handled later probably
@@ -162,11 +188,12 @@ public class EmojiGameManager : MonoBehaviour
             {
                 question.sprite = questionImages[Random.Range(5, questionImages.Length)];
             }
-            else
+            else if(gamePhase == 3)
             {
                 //this should later be replaced with the text question variants, will also have to change how buttons and answertypes work for phase 3 choices
                 question.sprite = questionImages[Random.Range(0, questionImages.Length)];
             }
+
 
             questionType = question.sprite.name;
 

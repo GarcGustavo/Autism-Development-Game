@@ -54,6 +54,7 @@ MonoBehaviour:
   playerScore: 0
   gamePhase: 0
   maxButtons: 3
+  sec: 1
   choiceType: 
   questionType: 
   answerType: 
@@ -65,6 +66,8 @@ MonoBehaviour:
   buttonPrefab: {fileID: 0}
   spawnedButtons: []
   questionBox: {fileID: 0}
+  congratsPrefab: {fileID: 1437553060751002, guid: f9f5496ef13ad184a8187d252fc96331,
+    type: 2}
   questionImages:
   - {fileID: 21300000, guid: 318bb7e34793e4d45ac6f874e6694e9f, type: 3}
   - {fileID: 21300000, guid: b8813a73fb66f824abee5a193026339f, type: 3}

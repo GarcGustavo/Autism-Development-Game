@@ -14,3 +14,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/EmojiGame.unity
     guid: ef0f3fa240e4dde438be680afd36f64e
+  - enabled: 1
+    path: Assets/Scenes/Story1.unity
+    guid: 1a2864f6af3a6bb4f872b0fdf58fbff7
